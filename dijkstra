@@ -1,0 +1,48 @@
+
+const ll INF = LLONG_MAX;
+vector<vector<pair<ll, ll>>> graph;
+vector<ll> dist, parent;
+ll n, m;
+void init() {
+  dist.assign(n + 1, INF);
+  parent.assign(n + 1, -1);
+  graph = vector<vector<pair<ll, ll>>>(n + 1);
+}
+void addEdge(ll u, ll v, ll w) {
+  graph[u].push_back({v, w});
+}
+void dijkstra(ll source) {
+  vector<bool> vis(n + 1, false);
+  dist[source] = 0;
+  using pii = pair<ll, ll>;
+  priority_queue<pii, vector<pii>, greater<pii>> q;
+  q.push({0, source});
+  while (!q.empty()) {
+    ll vertex = q.top().second;
+    ll d_v = q.top().first;
+    q.pop();
+    if (d_v > dist[vertex])      continue;
+
+    for (auto edge : graph[vertex]) {
+      ll to = edge.first;
+      ll weight = edge.second;
+
+      if (dist[vertex] + weight < dist[to]) {
+        dist[to] = dist[vertex] + weight;
+        parent[to] = vertex;
+        q.push({dist[to], to});
+      }
+    }
+  }
+}
+
+vector<ll> restore_path(ll source, ll t) {
+  vector<ll> path;
+
+  for (ll v = t; v != source; v = parent[v])
+    path.push_back(v);
+  path.push_back(source);
+
+  reverse(path.begin(), path.end());
+  return path;
+}
